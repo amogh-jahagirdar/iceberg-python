@@ -233,10 +233,14 @@ def handle_not(result: ParseResults) -> Not:
 
 
 def handle_and(result: ParseResults) -> And:
+    if len(result[0]) > 2:
+        return And(result[0][0], result[0][1], *result[0][2:])
     return And(result[0][0], result[0][1])
 
 
 def handle_or(result: ParseResults) -> Or:
+    if len(result[0]) > 2:
+        return Or(result[0][0], result[0][1], *result[0][2:])
     return Or(result[0][0], result[0][1])
 
 
