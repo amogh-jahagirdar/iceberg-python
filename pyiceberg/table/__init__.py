@@ -924,11 +924,9 @@ class Table:
         """Return a dict of the sort orders of this table."""
         return {sort_order.order_id: sort_order for sort_order in self.metadata.sort_orders}
 
-    def last_partition_id(self) -> int:
+    def last_partition_id(self) -> Optional[int]:
         """Return the highest assigned partition field ID across all specs for the table or 999 if there is no spec."""
-        if self.metadata.last_partition_id:
-            return self.metadata.last_partition_id
-        return PARTITION_FIELD_ID_START - 1
+        return self.metadata.last_partition_id
 
     @property
     def properties(self) -> Dict[str, str]:
@@ -2549,7 +2547,7 @@ class UpdateSpec:
         self._transform_to_added_field = {}
         self._adds = []
         self._deletes = set()
-        self._last_assigned_partition_id = table.last_partition_id()
+        self._last_assigned_partition_id = table.last_partition_id() or PARTITION_FIELD_ID_START - 1
         self._renames = {}
         self._transaction = transaction
         self._case_sensitive = case_sensitive

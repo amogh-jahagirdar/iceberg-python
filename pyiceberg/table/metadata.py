@@ -33,7 +33,7 @@ from pydantic import ValidationError as PydanticValidationError
 from typing_extensions import Annotated
 
 from pyiceberg.exceptions import ValidationError
-from pyiceberg.partitioning import PARTITION_FIELD_ID_START, PartitionSpec, assign_fresh_partition_spec_ids
+from pyiceberg.partitioning import PartitionSpec, assign_fresh_partition_spec_ids
 from pyiceberg.schema import Schema, assign_fresh_schema_ids
 from pyiceberg.table.refs import MAIN_BRANCH, SnapshotRef, SnapshotRefType
 from pyiceberg.table.snapshots import MetadataLogEntry, Snapshot, SnapshotLogEntry
@@ -307,10 +307,10 @@ class TableMetadataV1(TableMetadataCommonFields, IcebergBaseModel):
             else:
                 data[PARTITION_SPECS] = [{"field-id": 0, "fields": ()}]
 
-        data[LAST_PARTITION_ID] = max(
-            [field.get(FIELD_ID) for spec in data[PARTITION_SPECS] for field in spec[FIELDS]],
-            default=PARTITION_FIELD_ID_START - 1,
-        )
+        if len(data[PARTITION_SPECS]) > 0:
+            ids = [field[FIELD_ID] for spec in data[PARTITION_SPECS] for field in spec[FIELDS] if FIELD_ID in field]
+            if len(ids) > 0:
+                data[LAST_PARTITION_ID] = max(ids)
 
         return data
 

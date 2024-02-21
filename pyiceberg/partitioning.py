@@ -149,7 +149,7 @@ class PartitionSpec(IcebergBaseModel):
     def last_assigned_field_id(self) -> int:
         if self.fields:
             return max(pf.field_id for pf in self.fields)
-        return PARTITION_FIELD_ID_START - 1
+        return PARTITION_FIELD_ID_START
 
     @cached_property
     def source_id_to_fields_map(self) -> Dict[int, List[PartitionField]]:
